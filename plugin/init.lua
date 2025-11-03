@@ -24,6 +24,28 @@ Tested on: Ubuntu 24.04.3, wezterm 20251025-070338-b6e75fd7
 local M = {}
 
 local wezterm = require("wezterm")
+
+local function find_plugin_package_path(myproject)
+  local separator = package.config:sub(1, 1) == "\\" and "\\" or "/"
+  for i, v in ipairs(wezterm.plugin.list()) do
+    wezterm.log_info("[COLOR] " .. i .. " " .. v.url)
+    if v.url == myproject then
+      wezterm.log_info("[COLOR] v.url == myproject")
+      return v.plugin_dir .. separator .. 'plugin' .. separator .. '?.lua'
+    else
+      wezterm.log_info("[COLOR] v.url ~= myproject")
+    end
+  end
+  --- #todo add error fail here
+end
+
+local ppath = find_plugin_package_path("file:///home/master/Coding/git/sunbearc22/wezterm/sb_show_system_color.wezterm")
+wezterm.log_info("[COLOR] ppath = " .. ppath)
+local ppath_parent = string.gsub(ppath, "%?%.lua$", "")
+wezterm.log_info("[COLOR] ppath_parent = " .. ppath_parent)
+package.path = package.path .. ";" .. ppath
+wezterm.log_info("[COLOR] package.path = " .. package.path)
+
 local func_c = require("func_c")
 
 ---@param config unknown
@@ -51,8 +73,8 @@ function M.apply_to_config(config, opts)
     end
 
     -- Use custom python script to get Ubuntu >=24.04 theme and color
-    local pyscript = wezterm.config_dir .. "/get_ubuntu_24.04_theme_color.py"
-    -- wezterm.log_info("[COLOR] pyscript = " .. pyscript)
+    local pyscript = ppath_parent .. "get_ubuntu_24.04_theme_color.py"
+    wezterm.log_info("[COLOR] pyscript = " .. pyscript)
     local success, stdout, stderr = wezterm.run_child_process({ "python3", pyscript })
 
     -- What to do when python script fails
@@ -100,11 +122,12 @@ function M.apply_to_config(config, opts)
       return cc
     end
 
-    wezterm.log_info("wezterm.GLOBAL.system.shades " .. string_hexcodes(wezterm.GLOBAL.system.shades))
-    wezterm.log_info("wezterm.GLOBAL.system.tints " .. string_hexcodes(wezterm.GLOBAL.system.tints))
-    wezterm.log_info("wezterm.GLOBAL.system.triadic " .. string_hexcodes(wezterm.GLOBAL.system.triadic))
-    wezterm.log_info("wezterm.GLOBAL.system.complementary " .. string_hexcodes(wezterm.GLOBAL.system.complementary))
-    wezterm.log_info("wezterm.GLOBAL.system.analogous " .. string_hexcodes(wezterm.GLOBAL.system.analogous))
+    wezterm.log_info("[COLOR] wezterm.GLOBAL.system.shades " .. string_hexcodes(wezterm.GLOBAL.system.shades))
+    wezterm.log_info("[COLOR] wezterm.GLOBAL.system.tints " .. string_hexcodes(wezterm.GLOBAL.system.tints))
+    wezterm.log_info("[COLOR] wezterm.GLOBAL.system.triadic " .. string_hexcodes(wezterm.GLOBAL.system.triadic))
+    wezterm.log_info("[COLOR] wezterm.GLOBAL.system.complementary " ..
+      string_hexcodes(wezterm.GLOBAL.system.complementary))
+    wezterm.log_info("[COLOR] wezterm.GLOBAL.system.analogous " .. string_hexcodes(wezterm.GLOBAL.system.analogous))
   end
 
   -- Local Function returns a color scheme for a given system theme
@@ -120,8 +143,8 @@ function M.apply_to_config(config, opts)
   update_GLOBAL_system_theme_color()
   config.color_scheme = get_color_scheme_for(wezterm.GLOBAL.system.theme)
   config.colors = {
-    foreground = wezterm.GLOBAL.system.tints[5],   -- The default text color
-    background = wezterm.GLOBAL.system.shades[10], -- The default background color
+    foreground = wezterm.GLOBAL.system.tints[5],       -- The default text color
+    background = wezterm.GLOBAL.system.shades[10],     -- The default background color
     cursor_bg = wezterm.GLOBAL.system.color,
     cursor_fg = wezterm.GLOBAL.system.triadic[3],
     cursor_border = wezterm.GLOBAL.system.shades[8],
@@ -130,8 +153,8 @@ function M.apply_to_config(config, opts)
     selection_bg = wezterm.GLOBAL.system.shades[9],
     scrollbar_thumb = wezterm.GLOBAL.system.color,
     split = wezterm.GLOBAL.system.shades[6],
-    launcher_label_bg = { AnsiColor = "Black" },                      -- (*Since: Nightly Builds Only*)
-    launcher_label_fg = { Color = wezterm.GLOBAL.system.triadic[2] }, -- (*Since: Nightly Builds Only*)
+    launcher_label_bg = { AnsiColor = "Black" },                          -- (*Since: Nightly Builds Only*)
+    launcher_label_fg = { Color = wezterm.GLOBAL.system.triadic[2] },     -- (*Since: Nightly Builds Only*)
   }
   config.integrated_title_button_color = wezterm.GLOBAL.system.color
 end
