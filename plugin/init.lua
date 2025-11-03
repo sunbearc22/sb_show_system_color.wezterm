@@ -27,26 +27,12 @@ local wezterm = require("wezterm")
 local func_c = require("func_c")
 
 ---@param config unknown
----@param opts { nshades: number?, ntints: number?, nanalogous: number? }
+---@param opts {}
 -- Module Function to apply to config
 function M.apply_to_config(config, opts)
-  local nshades = opts.nshades or 10
-  local ntints = opts.ntints or 10
-  local nanalogous = opts.nanalogous or 3
-
-  -- Checks for opts
-  if nshades < 10 then
-    wezterm.log_info("[COLOR] Warning: nshades < 10. Default value will instead be used.")
-    nshades = 10
-  end
-  if ntints < 10 then
-    wezterm.log_info("[COLOR] Warning: ntints < 10. Default value will instead be used.")
-    ntints = 10
-  end
-  if nanalogous < 10 then
-    wezterm.log_info("[COLOR] Warning: nanalogous < 3. Default value will instead be used.")
-    nanalogous = 10
-  end
+  local nshades = 10
+  local ntints = 10
+  local nanalogous = 3
 
   -- Local Function to update wezterm.GLOBAL.system table with Ubuntu >=24.04
   -- theme, color, shades, tints, triadic, complementary and analogous colors
