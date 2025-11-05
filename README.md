@@ -31,8 +31,8 @@ if wezterm.config_builder then
 end
 
 -- Add these lines (to install and use the plugin):
-color = wezterm.plugin.require("https://github.com/sunbearc22/sb_show_system_color.wezterm.git")
-color.apply_to_config(config, {})
+local repo = "https://github.com/sunbearc22/sb_show_system_color.wezterm.git"
+wezterm.plugin.require(repo).apply_to_config(config, {})
 
 return config
 ```
