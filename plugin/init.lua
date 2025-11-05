@@ -34,9 +34,9 @@ local function find_plugin_package_path(repo)
   local separator = package.config:sub(1, 1) == "\\" and "\\" or "/"
 
   for _, v in ipairs(wezterm.plugin.list()) do
-    wezterm.log_info("[COLOR] " .. v.url)
+    -- wezterm.log_info("[COLOR] " .. v.url)
     if v.url == repo then
-      wezterm.log_info("[COLOR] v.url == repo")
+      -- wezterm.log_info("[COLOR] v.url == repo")
       return v.plugin_dir .. separator .. 'plugin' .. separator .. '?.lua'
     end
   end
@@ -49,18 +49,18 @@ end
 -- Find plugin path
 local plugin = "https://github.com/sunbearc22/sb_show_system_color.wezterm.git"
 local ppath = find_plugin_package_path(plugin)
-wezterm.log_info("[COLOR] ppath = " .. ppath)
+-- wezterm.log_info("[COLOR] ppath = " .. ppath)
 
 -- Exit if plugin is no found
 if not ppath then return end
 
 -- Get plugin's parent directory (used to access other non Lua files that belongs to this plugin)
 local ppath_parent = string.gsub(ppath, "%?%.lua$", "")
-wezterm.log_info("[COLOR] ppath_parent = " .. ppath_parent)
+-- wezterm.log_info("[COLOR] ppath_parent = " .. ppath_parent)
 
 -- Update package.path (This ensures files mentioned in require() can be located)
 package.path = package.path .. ";" .. ppath
-wezterm.log_info("[COLOR] package.path = " .. package.path)
+-- wezterm.log_info("[COLOR] package.path = " .. package.path)
 
 local func_c = require("func_c")
 
@@ -90,7 +90,7 @@ function M.apply_to_config(config, opts)
 
     -- Use custom python script to get Ubuntu >=24.04 theme and color
     local pyscript = ppath_parent .. "get_ubuntu_24.04_theme_color.py"
-    wezterm.log_info("[COLOR] pyscript = " .. pyscript)
+    -- wezterm.log_info("[COLOR] pyscript = " .. pyscript)
     local success, stdout, stderr = wezterm.run_child_process({ "python3", pyscript })
 
     -- What to do when python script fails
