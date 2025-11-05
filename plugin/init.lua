@@ -25,24 +25,40 @@ local M = {}
 
 local wezterm = require("wezterm")
 
-local function find_plugin_package_path(myproject)
+---@param repo string?
+local function find_plugin_package_path(repo)
+  if not repo then
+    return nil
+  end
+
   local separator = package.config:sub(1, 1) == "\\" and "\\" or "/"
-  for i, v in ipairs(wezterm.plugin.list()) do
-    wezterm.log_info("[COLOR] " .. i .. " " .. v.url)
-    if v.url == myproject then
-      wezterm.log_info("[COLOR] v.url == myproject")
+
+  for _, v in ipairs(wezterm.plugin.list()) do
+    wezterm.log_info("[COLOR] " .. v.url)
+    if v.url == repo then
+      wezterm.log_info("[COLOR] v.url == repo")
       return v.plugin_dir .. separator .. 'plugin' .. separator .. '?.lua'
-    else
-      wezterm.log_info("[COLOR] v.url ~= myproject")
     end
   end
-  --- #todo add error fail here
+
+  -- Handle case where plugin is not found
+  wezterm.log_error("[COLOR] Plugin not found: " .. repo)
+  return nil
 end
 
-local ppath = find_plugin_package_path("file:///home/master/Coding/git/sunbearc22/wezterm/sb_show_system_color.wezterm")
+-- Find plugin path
+local plugin = "https://github.com/sunbearc22/sb_show_system_color.wezterm.git"
+local ppath = find_plugin_package_path(plugin)
 wezterm.log_info("[COLOR] ppath = " .. ppath)
+
+-- Exit if plugin is no found
+if not ppath then return end
+
+-- Get plugin's parent directory (used to access other non Lua files that belongs to this plugin)
 local ppath_parent = string.gsub(ppath, "%?%.lua$", "")
 wezterm.log_info("[COLOR] ppath_parent = " .. ppath_parent)
+
+-- Update package.path (This ensures files mentioned in require() can be located)
 package.path = package.path .. ";" .. ppath
 wezterm.log_info("[COLOR] package.path = " .. package.path)
 
@@ -143,8 +159,8 @@ function M.apply_to_config(config, opts)
   update_GLOBAL_system_theme_color()
   config.color_scheme = get_color_scheme_for(wezterm.GLOBAL.system.theme)
   config.colors = {
-    foreground = wezterm.GLOBAL.system.tints[5],       -- The default text color
-    background = wezterm.GLOBAL.system.shades[10],     -- The default background color
+    foreground = wezterm.GLOBAL.system.tints[5],   -- The default text color
+    background = wezterm.GLOBAL.system.shades[10], -- The default background color
     cursor_bg = wezterm.GLOBAL.system.color,
     cursor_fg = wezterm.GLOBAL.system.triadic[3],
     cursor_border = wezterm.GLOBAL.system.shades[8],
@@ -153,8 +169,8 @@ function M.apply_to_config(config, opts)
     selection_bg = wezterm.GLOBAL.system.shades[9],
     scrollbar_thumb = wezterm.GLOBAL.system.color,
     split = wezterm.GLOBAL.system.shades[6],
-    launcher_label_bg = { AnsiColor = "Black" },                          -- (*Since: Nightly Builds Only*)
-    launcher_label_fg = { Color = wezterm.GLOBAL.system.triadic[2] },     -- (*Since: Nightly Builds Only*)
+    launcher_label_bg = { AnsiColor = "Black" },                      -- (*Since: Nightly Builds Only*)
+    launcher_label_fg = { Color = wezterm.GLOBAL.system.triadic[2] }, -- (*Since: Nightly Builds Only*)
   }
   config.integrated_title_button_color = wezterm.GLOBAL.system.color
 end
