@@ -3,7 +3,7 @@
 This plugin obtains Ubuntu >=24.04 system theme and color, and works out the shades, tints, triadic-colors, complementary-color and analogous-colors of the system's color to configure Wezterm's:
    - `config.color_scheme`
    - `config.colors` for:
-     - window fg & bg
+     - window `fg` & `bg`
      - cursor
      - selection
      - scroll_bar thumb
