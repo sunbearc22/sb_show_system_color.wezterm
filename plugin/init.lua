@@ -168,7 +168,7 @@ function M.apply_to_config(config, opts)
     selection_fg = wezterm.GLOBAL.system.complementary[2],
     selection_bg = wezterm.GLOBAL.system.shades[9],
     scrollbar_thumb = wezterm.GLOBAL.system.color,
-    split = wezterm.GLOBAL.system.shades[6],
+    split = wezterm.GLOBAL.system.shades[4],
     launcher_label_bg = { AnsiColor = "Black" },                      -- (*Since: Nightly Builds Only*)
     launcher_label_fg = { Color = wezterm.GLOBAL.system.triadic[2] }, -- (*Since: Nightly Builds Only*)
   }
